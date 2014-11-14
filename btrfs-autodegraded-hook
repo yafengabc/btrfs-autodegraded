@@ -13,7 +13,7 @@ btrfs_mount_handler () {
     local x i=1 work=${1%/}
     BTRFS_DIR_WORK=${work}
 
-    if ! root_is_btrfs; then
+    if [ "$(blkid -s TYPE -o value "$root" )" != "btrfs" ]; then
         default_mount_handler "$@"
         return
     fi
