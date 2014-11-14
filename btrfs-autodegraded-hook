@@ -1,0 +1,31 @@
+#!/bin/ash
+# BTRFS auto degraded initramfs hook
+
+
+run_hook () {
+
+    if [ "$(blkid -s TYPE -o value "$root" )" != "btrfs" ] && [ "$(blkid -s TYPE -o value -lt "$root" )" != "btrfs" ]; then
+        echo ":: The root filesystem is not btrfs return the default_mount_handler"
+		default_mount_handler "$@"
+        return
+    fi
+
+    # temporary mount btrfs root subvolume
+    if ! mount -t btrfs -o ${rootflags},rw ${root} /new_root; then
+	echo "can't mount btrfs normaly"
+        # try to mount in degraded mode
+        
+            if ! mount -t btrfs -o ${rootflags},rw,degraded ${root} /new_root; then
+                echo "::Unable to mount root subvolume in degraded mode"
+                return 1
+            else
+                echo -e "::Mounted root subvolume in degraded mode"
+                sleep 3
+                rootflags="${rootflags},degraded"
+            	umount /new_root
+	    fi
+   else
+	umount /new_root
+   fi
+    
+}
