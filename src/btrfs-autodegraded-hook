@@ -38,7 +38,9 @@ run_hook () {
     # if the btrfs volume can't mount try scan it.
     if ! mount -t btrfs -o ${rootflags},rw ${root} /new_root; then
     	btrfs device scan
+    else 
     	umount /new_root
+    	return
     fi
     
     # temporary mount btrfs root subvolume
