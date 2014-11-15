@@ -30,8 +30,7 @@
 run_hook () {
 
     if [ "$(blkid -s TYPE -o value "$root" )" != "btrfs" ] && [ "$(blkid -s TYPE -o value -lt "$root" )" != "btrfs" ]; then
-        echo ":: The root filesystem is not btrfs return the default_mount_handler"
-		default_mount_handler "$@"
+        echo ":: The root filesystem is not btrfs return the default_mount"
         return
     fi
     
