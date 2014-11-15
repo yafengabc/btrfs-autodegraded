@@ -34,7 +34,13 @@ run_hook () {
 		default_mount_handler "$@"
         return
     fi
-
+    
+    # if the btrfs volume can't mount try scan it.
+    if ! mount -t btrfs -o ${rootflags},rw ${root} /new_root; then
+    	btrfs device scan
+    	umount /new_root
+    fi
+    
     # temporary mount btrfs root subvolume
     if ! mount -t btrfs -o ${rootflags},rw ${root} /new_root; then
 	echo "::Can't mount btrfs normaly!!!"
